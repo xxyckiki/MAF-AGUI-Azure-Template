@@ -1,0 +1,33 @@
+# Pre-commit hooks configuration
+# See https://pre-commit.com for more information
+
+repos:
+  # Ruff - 快速的 Python linter 和 formatter
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.2
+    hooks:
+      # 运行 linter
+      - id: ruff
+        args: [--fix]
+      # 运行 formatter
+      - id: ruff-format
+
+  # 通用检查
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      # 检查 YAML 语法
+      - id: check-yaml
+      # 检查 JSON 语法
+      - id: check-json
+      # 确保文件以换行符结尾
+      - id: end-of-file-fixer
+      # 移除行尾空格
+      - id: trailing-whitespace
+      # 检查大文件
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      # 检查合并冲突标记
+      - id: check-merge-conflict
+      # 检查私钥
+      - id: detect-private-key

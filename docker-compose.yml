@@ -1,0 +1,46 @@
+services:
+  # Python Backend - FastAPI + Agent Framework
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: maf-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=false
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
+      - AZURE_OPENAI_CHAT_DEPLOYMENT_NAME=${AZURE_OPENAI_CHAT_DEPLOYMENT_NAME}
+      # For Azure CLI auth in container, mount Azure credentials
+    volumes:
+      - ${USERPROFILE}/.azure:/root/.azure:ro
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+  # Next.js Frontend - CopilotKit UI
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_BACKEND_URL=http://backend:8000
+    container_name: maf-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - BACKEND_URL=http://backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  default:
+    name: maf-network
