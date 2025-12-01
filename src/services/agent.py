@@ -2,16 +2,27 @@ import os
 from agent_framework import ChatAgent
 from agent_framework.azure import AzureOpenAIChatClient
 from agent_framework_ag_ui import AgentFrameworkAgent
-from azure.identity import DefaultAzureCredential
+from azure.identity import (
+    ManagedIdentityCredential,
+    AzureCliCredential,
+    ChainedTokenCredential,
+)
 from .tools import get_flight_price, chart_mcp_tool, run_flight_chart_workflow
 
 
+def get_credential():
+    """Get credential based on environment."""
+    # 云端优先使用 Managed Identity，本地用 Azure CLI
+    # ChainedTokenCredential 会按顺序尝试，第一个成功的就用
+    return ChainedTokenCredential(
+        ManagedIdentityCredential(),  # 云端
+        AzureCliCredential(),  # 本地
+    )
+
+
 # Create the chat client
-# DefaultAzureCredential 自动选择认证方式：
-# - 本地：使用 Azure CLI 登录凭证
-# - 云端：使用 Managed Identity
 chat_client = AzureOpenAIChatClient(
-    credential=DefaultAzureCredential(),
+    credential=get_credential(),
     endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
     deployment_name=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME", "gpt-5-nano"),
 )
