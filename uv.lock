@@ -1163,6 +1163,7 @@ dependencies = [
     { name = "azure-ai-agents" },
     { name = "azure-identity" },
     { name = "azure-monitor-opentelemetry" },
+    { name = "azure-monitor-opentelemetry-exporter" },
     { name = "fastapi" },
 ]
 
@@ -1182,6 +1183,7 @@ requires-dist = [
     { name = "azure-ai-agents", specifier = ">=1.1.0" },
     { name = "azure-identity", specifier = ">=1.25.1" },
     { name = "azure-monitor-opentelemetry", specifier = ">=1.8.2" },
+    { name = "azure-monitor-opentelemetry-exporter", specifier = ">=1.0.0b45" },
     { name = "fastapi", specifier = ">=0.121.3" },
 ]
 
