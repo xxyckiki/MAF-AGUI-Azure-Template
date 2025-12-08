@@ -106,17 +106,6 @@ maf/
 └── Dockerfile                  # 📦 Backend container
 ```
 
-### Folder Responsibilities
-
-| Folder | Purpose |
-|--------|---------|
-| `src/services/` | Core AI logic - agents, tools, workflows. **Start here for customization.** |
-| `src/db/` | Database connections and persistence. Uses Azure Identity for auth. |
-| `src/schemas/` | Pydantic models for data validation and serialization. |
-| `src/exceptions.py` | Centralized error handling with structured responses. |
-| `frontend/src/app/` | CopilotKit UI components and AG-UI API route. |
-| `tests/` | Pytest unit tests with good coverage. |
-
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -183,41 +172,6 @@ This template deploys to Azure with:
 | Database | Cosmos DB (NoSQL) | Key or Managed Identity |
 | Monitoring | OpenTelemetry → Application Insights | Connection String |
 | CI/CD | GitHub Actions | Federated Identity |
-
-👉 See **[AZURE_DEPLOYMENT.md](./AZURE_DEPLOYMENT.md)** for step-by-step instructions.
-
-## 🔧 Customization Guide
-
-### Replace the Demo Use Case
-
-1. **Define your tools** in `src/services/tools.py`
-2. **Create your agent** in `src/services/agent.py`
-3. **Update the UI** in `frontend/src/app/page.tsx`
-
-### Simplify the Architecture
-
-The demo uses two agents + workflow for demonstration. For simpler apps:
-
-```python
-# Instead of workflow with two agents:
-flight_agent → workflow → chart_agent
-
-# Just use one agent with multiple tools:
-my_agent = ChatAgent(
-    tools=[tool_a, tool_b, tool_c],
-    ...
-)
-```
-
-## ⚙️ Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `AZURE_OPENAI_ENDPOINT` | Azure OpenAI endpoint URL | ✅ |
-| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Model deployment name | ✅ |
-| `COSMOS_ENDPOINT` | Cosmos DB endpoint (for persistence) | Optional |
-| `APPLICATIONINSIGHTS_CONNECTION_STRING` | App Insights (for monitoring) | Optional |
-| `BACKEND_URL` | Backend URL (for frontend in production) | In prod |
 
 ## 📚 Tech Stack
 
