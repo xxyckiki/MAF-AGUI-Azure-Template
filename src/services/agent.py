@@ -13,11 +13,11 @@ from ..db import CosmosChatMessageStore
 
 def get_credential():
     """Get credential based on environment."""
-    # 云端优先使用 Managed Identity，本地用 Azure CLI
-    # ChainedTokenCredential 会按顺序尝试，第一个成功的就用
+    # Cloud: use Managed Identity first, Local: use Azure CLI
+    # ChainedTokenCredential tries each credential in order until one succeeds
     return ChainedTokenCredential(
-        ManagedIdentityCredential(),  # 云端
-        AzureCliCredential(),  # 本地
+        ManagedIdentityCredential(),  # Cloud
+        AzureCliCredential(),  # Local
     )
 
 
@@ -28,14 +28,14 @@ chat_client = AzureOpenAIChatClient(
     deployment_name=os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME", "gpt-5-nano"),
 )
 
-# Flight Price Agent - 查询机票价格
+# Flight Price Agent - Query flight prices
 flight_agent = chat_client.create_agent(
     instructions="You are a flight price assistant. Help users check flight ticket prices between different locations.",
     name="FlightPriceAgent",
     tools=[get_flight_price],
 )
 
-# Chart Agent - 生成图表
+# Chart Agent - Generate charts
 chart_agent = chat_client.create_agent(
     instructions="""You are a chart generation assistant.
 When you receive flight price information in JSON format:
@@ -46,29 +46,29 @@ When you receive flight price information in JSON format:
    - The chart/table URL from the tool
 
 Example response format:
-"您好！查询到的票价信息：北京到东京，价格350 USD，航空公司Air China，经济舱。
-我已为您生成了表格，请查看：[URL from tool]"
+"Here's the flight information: Beijing to Tokyo, Price: 350 USD, Airline: Air China, Class: Economy.
+I've generated a table for you, please check: [URL from tool]"
 
 Remember: Always call the chart tool, don't skip it!""",
     name="ChartGeneratorAgent",
     tools=[chart_mcp_tool],
 )
 
-# CopilotKit Agent - 用于前端 AG-UI 连接
+# CopilotKit Agent - For frontend AG-UI connection
 copilot_base_agent = ChatAgent(
     name="flight_chart_assistant",
-    instructions="""你是一个专业的机票助手。
+    instructions="""You are a professional flight assistant.
 
-当用户询问机票价格时：
-- 使用 query_flight_and_generate_chart 工具查询价格并生成图表
-- 这个工具会自动查询价格并生成可视化图表
+When a user asks about flight prices:
+- Use the query_flight_and_generate_chart tool to query prices and generate charts
+- This tool automatically queries prices and generates visualizations
 
-始终用中文友好地回复用户。如果用户只是打招呼，先问他们需要查询什么航线的机票。""",
+Always respond in a friendly manner. If the user just says hello, ask them which route they want to query.""",
     chat_client=chat_client,
     tools=[run_flight_chart_workflow],
     chat_message_store_factory=lambda: CosmosChatMessageStore(
         session_id=os.getenv("DEFAULT_SESSION_ID", "default_session"),
-        max_messages=100,  # 最多保留100条消息
+        max_messages=100,  # Keep up to 100 messages
     ),
 )
 
@@ -76,8 +76,8 @@ copilot_base_agent = ChatAgent(
 copilot_agent = AgentFrameworkAgent(
     agent=copilot_base_agent,
     name="FlightChartCopilot",
-    description="机票价格查询与图表生成助手",
+    description="Flight price query and chart generation assistant",
 )
 
-# 保持向后兼容
+# Backward compatibility alias
 agent = flight_agent

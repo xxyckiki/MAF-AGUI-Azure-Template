@@ -18,17 +18,17 @@ class TestGetFlightPrice:
 
         This is the "happy path" - normal expected behavior.
         """
-        # Arrange (准备)
+        # Arrange
         departure = "Beijing"
         destination = "Tokyo"
 
-        # Act (执行)
+        # Act
         result = get_flight_price(departure, destination)
 
-        # Assert (断言)
+        # Assert
         assert result["departure"] == "Beijing"
         assert result["destination"] == "Tokyo"
-        assert result["price"] == 350.0
+        assert result["price"] == 350
         assert result["currency"] == "USD"
         assert "airline" in result
         assert "flight_class" in result
@@ -82,4 +82,4 @@ class TestGetFlightPrice:
 
         assert result["departure"] == departure
         assert result["destination"] == destination
-        assert isinstance(result["price"], float)
+        assert isinstance(result["price"], (int, float))

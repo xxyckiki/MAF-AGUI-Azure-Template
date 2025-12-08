@@ -1,15 +1,39 @@
-# MAF - Microsoft Agent Framework Demo
+# MAF - Microsoft Agent Framework Template
 
-A full-stack AI agent application using Microsoft Agent Framework with FastAPI backend and CopilotKit frontend.
+A production-ready template for building AI-powered products using **Microsoft Agent Framework**, **CopilotKit**, and **Azure Services**. This template follows the **AG-UI protocol** standard and implements modern AI application architecture patterns.
 
-## Features
+## 🌟 What is this?
 
-- 🤖 **AI Agents**: Flight price query agent + Chart generation agent
-- 🔄 **Workflow**: Sequential workflow connecting flight query → chart generation
-- 🎨 **CopilotKit UI**: Modern chat interface with AG-UI protocol
-- 🐳 **Docker Ready**: One-command deployment for both frontend and backend
+This is a **starter template** for building AI chat applications with:
 
-## Architecture
+- **AG-UI Protocol** - Standard protocol for AI agent communication (CopilotKit ↔ Agent Framework)
+- **Azure-native** - Built with Azure Services (OpenAI, Cosmos DB, Container Apps, Application Insights, etc.)
+- **Agent Workflow** - Multi-agent orchestration with tools and MCP (Model Context Protocol) integration
+- **Modern Architecture** - Clean separation of concerns with modular folder structure
+- **Production Features** - Auth, persistence, observability, CI/CD included
+
+### Demo Use Case
+
+The template demonstrates a **flight price query assistant** that:
+1. Queries flight prices between cities
+2. Generates charts/tables for visualization (via MCP Tools)
+
+> ⚠️ **Note on Architecture**: The demo uses **two agents** (Flight Agent → Chart Agent) connected via a **workflow**. This is intentionally over-engineered to demonstrate Agent Framework's workflow capabilities. In a real application, a single agent with two tools would be simpler and sufficient.
+
+## ✨ Features
+
+| Category | Features |
+|----------|----------|
+| **Protocol** | 🔌 AG-UI standard (CopilotKit ↔ Microsoft Agent Framework) |
+| **Frontend** | 🎨 CopilotKit Chat UI (Next.js) |
+| **Backend** | ⚡ FastAPI + Microsoft Agent Framework |
+| **LLM** | 🧠 Azure OpenAI (Managed Identity auth) |
+| **Database** | 💾 Azure Cosmos DB (conversation persistence) |
+| **Observability** | 📊 OpenTelemetry → Azure Application Insights |
+| **DevOps** | 🐳 Docker Compose (local) + GitHub Actions → Azure Container Registry (CI/CD) |
+| **Deployment** | ☁️ Azure Container Apps + Static Web Apps |
+
+## 🏗️ Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -30,106 +54,180 @@ A full-stack AI agent application using Microsoft Agent Framework with FastAPI b
 │                         │                                    │
 │  ┌──────────────────────▼──────────────────────────────┐    │
 │  │           Microsoft Agent Framework                  │    │
-│  │  ┌─────────────┐         ┌─────────────┐            │    │
-│  │  │ Flight Agent│ ──────▶ │ Chart Agent │            │    │
-│  │  └─────────────┘         └─────────────┘            │    │
+│  │                                                      │    │
+│  │  ┌─────────────┐  workflow  ┌─────────────┐         │    │
+│  │  │ Flight Agent│ ─────────▶ │ Chart Agent │         │    │
+│  │  │  (Tool A)   │            │  (Tool B)   │         │    │
+│  │  └─────────────┘            └─────────────┘         │    │
+│  │                                                      │    │
+│  │  Note: Two agents used to demo workflow feature.     │    │
+│  │  Single agent with both tools works too!             │    │
 │  └─────────────────────────────────────────────────────┘    │
+│                         │                                    │
+│  ┌──────────────────────▼──────────────────────────────┐    │
+│  │              Azure Cosmos DB                         │    │
+│  │         (Conversation Persistence)                   │    │
+│  └─────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Azure Services                            │
+│  ┌──────────────┐ ┌──────────────┐ ┌────────────────────┐   │
+│  │ Azure OpenAI │ │  Cosmos DB   │ │ Application Insights│   │
+│  │   (LLM)      │ │ (NoSQL)      │ │   (Monitoring)      │   │
+│  └──────────────┘ └──────────────┘ └────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Quick Start
+## 📁 Project Structure
+
+```
+maf/
+├── main.py                     # FastAPI entry point
+├── src/
+│   ├── services/               # 🧠 Core business logic
+│   │   ├── agent.py            #    Agent definitions & CopilotKit integration
+│   │   ├── tools.py            #    Tool implementations (flight query, chart)
+│   │   └── workflow.py         #    Multi-agent workflow orchestration
+│   ├── db/                     # 💾 Database layer
+│   │   ├── cosmos.py           #    Cosmos DB connection (Azure Identity)
+│   │   └── cosmos_chat_store.py#    Chat message persistence for Agent Framework
+│   ├── schemas/                # 📋 Data models (Pydantic)
+│   │   └── flight.py           #    Flight data schema
+│   └── exceptions.py           # ⚠️ Global exception handling
+├── tests/                      # 🧪 Unit tests (pytest)
+├── frontend/                   # 🎨 Next.js + CopilotKit
+│   └── src/app/
+│       ├── layout.tsx          #    App layout with CopilotKit provider
+│       ├── page.tsx            #    Chat UI component
+│       └── api/copilotkit/     #    API route (proxy to backend via AG-UI)
+├── docker-compose.yml          # 🐳 Local development (one command)
+└── Dockerfile                  # 📦 Backend container
+```
+
+### Folder Responsibilities
+
+| Folder | Purpose |
+|--------|---------|
+| `src/services/` | Core AI logic - agents, tools, workflows. **Start here for customization.** |
+| `src/db/` | Database connections and persistence. Uses Azure Identity for auth. |
+| `src/schemas/` | Pydantic models for data validation and serialization. |
+| `src/exceptions.py` | Centralized error handling with structured responses. |
+| `frontend/src/app/` | CopilotKit UI components and AG-UI API route. |
+| `tests/` | Pytest unit tests with good coverage. |
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
+- Python 3.13 + [uv](https://docs.astral.sh/uv/)
 - Docker & Docker Compose
-- Azure CLI (logged in with `az login`)
+- Azure CLI (`az login`)
 - Azure OpenAI resource
 
 ### 1. Clone and Configure
 
 ```bash
+git clone https://github.com/xxyckiki/maf-copilotkit-agent-template.git
+cd maf-copilotkit-agent-template
+
 # Copy environment variables
 cp .env.example .env
 
 # Edit .env with your Azure OpenAI settings
 ```
 
-### 2. Start with Docker Compose (One Command!)
+### 2. Start with Docker Compose
 
 ```bash
 docker-compose up --build
 ```
 
-This will:
-- Build and start the Python backend on http://localhost:8000
-- Build and start the Next.js frontend on http://localhost:3000
+This starts:
+- Backend: http://localhost:8000
+- Frontend: http://localhost:3000
 
 ### 3. Open the App
 
-Visit http://localhost:3000 and start chatting with the AI agent!
+Visit http://localhost:3000 and start chatting!
 
-## Development
+## 💻 Development
 
-### Backend Only
+### Backend
 
 ```bash
-# Install dependencies
-uv sync
-
-# Run the server
-uv run uvicorn main:app --reload
+uv sync                              # Install dependencies
+uv run uvicorn main:app --reload     # Run server
+uv run pytest -v                     # Run tests
 ```
 
-### Frontend Only
+### Frontend
 
 ```bash
 cd frontend
-
-# Install dependencies
-npm install --legacy-peer-deps
-
-# Run dev server
-npm run dev
+npm install --legacy-peer-deps       # Install dependencies
+npm run dev                          # Run dev server
 ```
 
-### Run Tests
+## ☁️ Azure Deployment
 
-```bash
-uv run pytest -v
+This template deploys to Azure with:
+
+| Component | Azure Service | Auth |
+|-----------|---------------|------|
+| Backend | Container Apps | Managed Identity |
+| Frontend | Static Web Apps | - |
+| Container Registry | Azure Container Registry | Admin / Managed Identity |
+| LLM | Azure OpenAI | Managed Identity |
+| Database | Cosmos DB (NoSQL) | Key or Managed Identity |
+| Monitoring | OpenTelemetry → Application Insights | Connection String |
+| CI/CD | GitHub Actions | Federated Identity |
+
+👉 See **[AZURE_DEPLOYMENT.md](./AZURE_DEPLOYMENT.md)** for step-by-step instructions.
+
+## 🔧 Customization Guide
+
+### Replace the Demo Use Case
+
+1. **Define your tools** in `src/services/tools.py`
+2. **Create your agent** in `src/services/agent.py`
+3. **Update the UI** in `frontend/src/app/page.tsx`
+
+### Simplify the Architecture
+
+The demo uses two agents + workflow for demonstration. For simpler apps:
+
+```python
+# Instead of workflow with two agents:
+flight_agent → workflow → chart_agent
+
+# Just use one agent with multiple tools:
+my_agent = ChatAgent(
+    tools=[tool_a, tool_b, tool_c],
+    ...
+)
 ```
 
-## Environment Variables
+## ⚙️ Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `AZURE_OPENAI_ENDPOINT` | Azure OpenAI endpoint URL | Required |
-| `AZURE_OPENAI_DEPLOYMENT` | Model deployment name | `gpt-4o` |
-| `AZURE_OPENAI_API_VERSION` | API version | `2024-12-01-preview` |
-| `DEBUG` | Enable debug mode | `true` |
-| `BACKEND_URL` | Backend URL (for frontend) | `http://localhost:8000` |
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `AZURE_OPENAI_ENDPOINT` | Azure OpenAI endpoint URL | ✅ |
+| `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` | Model deployment name | ✅ |
+| `COSMOS_ENDPOINT` | Cosmos DB endpoint (for persistence) | Optional |
+| `APPLICATIONINSIGHTS_CONNECTION_STRING` | App Insights (for monitoring) | Optional |
+| `BACKEND_URL` | Backend URL (for frontend in production) | In prod |
 
-## Project Structure
+## 📚 Tech Stack
 
-```
-maf/
-├── main.py                 # FastAPI entry point
-├── src/
-│   ├── services/
-│   │   ├── agent.py        # Agent definitions
-│   │   ├── tools.py        # Agent tools
-│   │   └── workflow.py     # Sequential workflow
-│   └── exceptions.py       # Exception handling
-├── tests/                  # Unit tests
-├── frontend/               # Next.js + CopilotKit
-│   ├── src/app/
-│   │   ├── page.tsx        # Chat UI
-│   │   └── api/copilotkit/ # API route
-│   └── Dockerfile
-├── Dockerfile              # Backend Dockerfile
-├── docker-compose.yml      # One-command deployment
-└── pyproject.toml          # Python dependencies
-```
+- **[Microsoft Agent Framework](https://github.com/microsoft/agent-framework)** - AI Agent orchestration
+- **[CopilotKit](https://copilotkit.ai)** - React chat UI + AG-UI protocol
+- **[FastAPI](https://fastapi.tiangolo.com)** - Python web framework
+- **[Next.js](https://nextjs.org)** - React framework
+- **[Azure OpenAI](https://azure.microsoft.com/products/ai-services/openai-service)** - LLM backend
+- **[Azure Cosmos DB](https://azure.microsoft.com/products/cosmos-db)** - NoSQL database
+- **[OpenTelemetry](https://opentelemetry.io)** - Observability
 
-## License
-
+## 📄 License
 MIT

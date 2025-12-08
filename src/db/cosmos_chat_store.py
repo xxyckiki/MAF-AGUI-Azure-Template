@@ -3,6 +3,12 @@ Cosmos DB Chat Message Store
 
 Implementation of ChatMessageStore protocol for Agent Framework,
 using Cosmos DB for persistent storage.
+
+NOTE: This implementation only saves chat messages to Cosmos DB.
+Loading chat history on page refresh is NOT implemented because
+CopilotKit does not support restoring conversation state from backend.
+The data is stored and can be used for analytics, admin dashboards, etc.
+If you need to load history, you can implement a REST API to fetch it.
 """
 
 from collections.abc import Sequence

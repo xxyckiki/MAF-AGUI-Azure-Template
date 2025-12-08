@@ -7,14 +7,14 @@ from src.services.agent import copilot_agent
 from src.exceptions import register_exception_handlers
 from agent_framework.observability import setup_observability
 
-# 加载 .env 文件
+# Load environment variables from .env file
 load_dotenv()
 
-# 是否为开发环境
+# Check if running in debug mode
 DEBUG = os.getenv("DEBUG", "true").lower() == "true"
 
-# 配置 OpenTelemetry - Agent Framework 内置支持 Azure Monitor
-# 参考：https://learn.microsoft.com/azure/ai-services/agents/how-to/observability
+# Configure OpenTelemetry - Agent Framework has built-in Azure Monitor support
+# Reference: https://learn.microsoft.com/azure/ai-services/agents/how-to/observability
 setup_observability()
 
 app = FastAPI(
@@ -23,19 +23,19 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# 注册全局异常处理器
+# Register global exception handlers
 register_exception_handlers(app, debug=DEBUG)
 
-# CORS 配置 - 允许前端访问
+# CORS configuration - allow frontend access
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 生产环境应限制为特定域名
+    allow_origins=["*"],  # In production, restrict to specific domains
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# 注册 AG-UI 端点（CopilotKit 连接用）
+# Register AG-UI endpoint for CopilotKit connection
 add_agent_framework_fastapi_endpoint(
     app=app,
     agent=copilot_agent,

@@ -25,7 +25,7 @@ def get_flight_price(
         return {
             "departure": departure.strip(),
             "destination": destination.strip(),
-            "price": 350.0,
+            "price": 350,
             "currency": "USD",
             "airline": "Air China",
             "flight_class": "Economy",
