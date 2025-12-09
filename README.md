@@ -1,6 +1,7 @@
 # MAF - AG-UI Azure Agent Template
 
-A production-ready template for building AI-powered products using **Microsoft Agent Framework**, **CopilotKit**, and **Azure Services**. This template follows the **AG-UI protocol** standard and implements modern AI application architecture patterns.
+This repository provides a fully structured template for building AI agent applications on Azure using the Microsoft Agent Framework, AG-UI protocol, CopilotKit UI, and Azure-native services.
+The template defines a clear separation between UI orchestration, agent execution, tool integration, and cloud-based observability, enabling teams to adopt agent-driven application architectures with minimal boilerplate.
 
 ![Architecture Diagram](docs/images/architect.png)
 
@@ -16,11 +17,12 @@ This is a **starter template** for building AI chat applications with:
 
 ### Demo Use Case
 
-The template demonstrates a **flight price query assistant** that:
+The template demonstrates a simple flight price assistant that:
 1. Queries flight prices between cities
 2. Generates charts/tables for visualization (via MCP Tools)
 
-> ⚠️ **Note on Architecture**: The demo uses **two agents** (Flight Agent → Chart Agent) connected via a **workflow**. This is intentionally over-engineered to demonstrate Agent Framework's workflow capabilities. In a real application, a single agent with two tools would be simpler and sufficient.
+> ⚠️ **Architecture Note**: The example uses two agents (Flight → Chart) to illustrate workflow composition.
+In real applications, responsibilities can be combined or extended based on system needs.
 
 ## ✨ Features
 
